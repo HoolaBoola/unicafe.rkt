@@ -13,6 +13,8 @@
 ; https://medium.com/chris-opperwall/practical-racket-using-a-json-rest-api-3d85eb11cc2d
 ; https://unicafe.fi/wp-json/swiss/v1/restaurants/?lang=fi
 
+(define tomorrow (make-parameter #f))
+
 (define chosen-cafes
   (command-line
    #:usage-help
@@ -25,6 +27,9 @@
    "\tPorthania, Physicum, Pesco & Vege Topelias, Olivia, Metsätalo, "
    "\tMeilahti, Infokeskus, Exactum, Chemicum, "
    "\tChemicum Opettajien ravintola, Cafe Portaali, Biokeskus" 
+   #:once-each
+   [("-t" "--tomorrow") "Show tomorrow's menu instead"
+                        (tomorrow #t)]
 
    #:args args
 
@@ -48,9 +53,14 @@
 (define (pad-number number)
   (~a number #:min-width 2 #:align 'right #:left-pad-string "0"))
 
-(define today (string-append (pad-number (date-day (current-date))) 
+(define (menu-day)
+  (if (tomorrow) 
+    (seconds->date (+ 86400 (date->seconds (current-date))))
+    (current-date)))
+
+(define day-formatted (string-append (pad-number (date-day (menu-day))) 
                              "." 
-                             (pad-number (date-month (current-date)))))
+                             (pad-number (date-month (menu-day)))))
 
 ; Find the cafes whose names are in `chosen-cafes`
 (define cafes (filter (lambda (cafe)
@@ -59,13 +69,10 @@
 
 (if (empty? cafes) (displayln "None of the arguments matched a Unicafe name \n (Hint: use the --help argument for a list of cafe names)") (void))
 
-(define (print-json json) 
-  (displayln (jsexpr->string json)))
-
 (define (get-lunch cafe)
   (define today-lunch
     (filter (lambda (day)
-              (string-contains? (hash-ref day 'date) today))
+              (string-contains? (hash-ref day 'date) day-formatted))
             cafe))
   (hash-ref (first today-lunch) 'data))
 
