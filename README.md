@@ -18,7 +18,7 @@ Copy `unicafe.rkt` to your preferred location.
 
 ### Alternative method
 
-You can download a release and run that directly, without Racket installed. This executable is quite a bit larger in size (~~~11MB~~ 2MB) , as it probably bundles much of Racket, including the garbage collector, with it. The executable has been created with `raco exe`.
+You can download a release and run that directly, without Racket installed. This executable is quite a bit larger in size (~~11MB~~ 2MB) , as it probably bundles much of Racket, including the garbage collector, with it. The executable has been created with `raco exe`.
 
 ## Usage
 
